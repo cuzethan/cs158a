@@ -1,0 +1,7 @@
+Process id: 73f0858f-9d7e-454f-a28b-6ccd7052b248
+Sent: uuid=73f0858f-9d7e-454f-a28b-6ccd7052b248, flag=0
+Received: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=0, greater, 0
+Sent: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=0
+Received: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=1, greater, 0
+Sent: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=1
+Leader is decided to c7608e43-c7e0-48ce-928a-348e020b32a6.

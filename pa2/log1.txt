@@ -1,0 +1,9 @@
+Process id: 762c1845-12c9-4cdc-b291-20881f6278e9
+Sent: uuid=762c1845-12c9-4cdc-b291-20881f6278e9, flag=0
+Received: uuid=73f0858f-9d7e-454f-a28b-6ccd7052b248, flag=0, less, 0
+Ignored: uuid=73f0858f-9d7e-454f-a28b-6ccd7052b248, flag=0
+Received: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=0, greater, 0
+Sent: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=0
+Received: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=1, greater, 0
+Sent: uuid=c7608e43-c7e0-48ce-928a-348e020b32a6, flag=1
+Leader is decided to c7608e43-c7e0-48ce-928a-348e020b32a6.
