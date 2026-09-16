@@ -64,13 +64,20 @@ def run_server(server_ip, server_port, message_queue, ready):
     ready.set()  # let main show the Enter prompt after this line
     conn, addr = server_sock.accept()
     print(f"[Server] Connected by {addr}")
+
+    # buffer until "}" marks the end of a JSON message
+    buf = ""
     while True:
         data = conn.recv(BUFFER_SIZE)
         if not data:
             break
-        msg_data = json.loads(data.decode())
-        print(f"[TCP Server] Received: {msg_data!r}")
-        message_queue.append(Message(uuid.UUID(msg_data["uuid"]), msg_data["flag"]))
+        buf += data.decode()
+        while "}" in buf:
+            msg_text, buf = buf.split("}", 1)
+            msg_text += "}"
+            msg_data = json.loads(msg_text)
+            print(f"[TCP Server] Received: {msg_data!r}")
+            message_queue.append(Message(uuid.UUID(msg_data["uuid"]), msg_data["flag"]))
 
 def main():
     parser = argparse.ArgumentParser()
