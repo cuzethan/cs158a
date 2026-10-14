@@ -4,7 +4,24 @@
 
 ## Message format
 
-Every message is a JSON object with a `type` field. UDP messages are one datagram each, so the datagram boundary is the message boundary. TCP messages share one byte stream, so each one is framed with a length prefix.
+Every message is a JSON object with a `type` field and a `sender_id` field. `type` identifies the message kind; `sender_id` identifies the sending node. UDP messages are one datagram each, so the datagram boundary is the message boundary. TCP messages share one byte stream, so each one is framed with a length prefix.
+
+### Node identity (UUID)
+
+Each running node generates one UUIDv4 at startup with `node_id = new_node_id()` from `protocol.py` (which uses `str(uuid.uuid4())`). Reuse this ID as `sender_id` in every message that node sends, including TCP messages. IDs use the canonical lowercase, hyphenated UUIDv4 string format, such as `8d972042-1f3b-4d75-a5b5-8f5e9a6c2d41`. Each process has its own ID, even when several nodes share an IP address; restarting a node generates a new ID.
+
+- Ignore UDP messages whose `sender_id` equals your own node ID.
+- When answering `PEER_REQUEST`, copy its `sender_id` into the ACK's `recipient_id`. The ACK's `sender_id` is the responder's UUID. Only the node matching `recipient_id` connects to the advertised TCP address and port.
+- The requester knows the server's UUID from the ACK. Once connected, it immediately sends `FILE_LIST` with its own `sender_id`. The accepting node learns the client's UUID from that first list, registers the peer, and immediately sends its own list.
+- Every later TCP message must carry the same sender UUID associated with that connection. Reject self-connections or a changed identity. Use UUIDs as peer-table keys to prevent duplicate connections.
+
+Discovery requests and ACKs are broadcast to UDP port **54321**. Every node listens on that port; ACKs are filtered by `recipient_id`. Only the requester connects to the ACK's advertised TCP endpoint. If simultaneous startup creates two connections between a pair, both nodes keep the connection initiated by the lexicographically smaller UUID. A single connection is kept regardless of which node initiated it.
+
+`Network.start()` opens listeners; call `Network.broadcast_request()` afterward. The agent's `on_connect(peer_id, session)` callback must immediately send its local `FILE_LIST`, and its `on_disconnect(peer_id)` callback must remove that peer's files and pending requests and log the departure. `network.py` logs message sends/receives through `log_message`; the agent logs peer additions/removals. No explicit goodbye message is sent.
+
+Call `Network.start()` and `Network.stop()` from the agent's main thread. During shutdown, `stop()` closes all sockets and joins the workers. Callbacks should return promptly and should not call `stop()` themselves.
+
+For example, construct a request with `make_message(DATA_REQUEST, node_id, request_id=1, filename="notes.txt")`. `request_id` remains an integer identifying a file request; it is separate from the node UUID.
 
 ### TCP framing
 
@@ -23,46 +40,48 @@ File bytes travel inside the JSON as base64 text in the `data` field of `FILE_DA
 
 ### Message types
 
+All five types require `type` and `sender_id`. Additional fields are listed below.
+
 | Message type | Transport | Additional fields |
 | --- | --- | --- |
 | `PEER_REQUEST` | UDP | None |
-| `PEER_ACK` | UDP | `recipient_id`, `tcp_ip`, `tcp_port` |
+| `PEER_ACK` | UDP | `recipient_id`: requester UUIDv4 string; `tcp_ip`, `tcp_port` |
 | `FILE_LIST` | TCP | `files`: list of filename strings |
 | `DATA_REQUEST` | TCP | `request_id`, `filename` |
 | `FILE_DATA` | TCP | `request_id`, `filename`, `status`; if `ok`: `size`, `data`; if `error`: `error` |
 
-**`PEER_REQUEST`** (UDP). Asks a peer to open a TCP connection.
+**`PEER_REQUEST`** (UDP). Discovers peers; the requester connects after receiving their ACKs.
 
 ```json
-{"type": "PEER_REQUEST"}
+{"type": "PEER_REQUEST", "sender_id": "8d972042-1f3b-4d75-a5b5-8f5e9a6c2d41"}
 ```
 
 **`PEER_ACK`** (UDP). Tells the requester where to connect.
 
 ```json
-{"type": "PEER_ACK", "recipient_id": "peer-a", "tcp_ip": "127.0.0.1", "tcp_port": 5001}
+{"type": "PEER_ACK", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "recipient_id": "8d972042-1f3b-4d75-a5b5-8f5e9a6c2d41", "tcp_ip": "127.0.0.1", "tcp_port": 5001}
 ```
 
 **`FILE_LIST`** (TCP). Names the files this peer is sharing.
 
 ```json
-{"type": "FILE_LIST", "files": ["notes.txt", "photo.png"]}
+{"type": "FILE_LIST", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "files": ["notes.txt", "photo.png"]}
 ```
 
 **`DATA_REQUEST`** (TCP). Asks for one file. `request_id` ties this request to the later `FILE_DATA`.
 
 ```json
-{"type": "DATA_REQUEST", "request_id": 1, "filename": "notes.txt"}
+{"type": "DATA_REQUEST", "sender_id": "8d972042-1f3b-4d75-a5b5-8f5e9a6c2d41", "request_id": 1, "filename": "notes.txt"}
 ```
 
 **`FILE_DATA`** (TCP), success. `data` is the file contents as base64. `size` is the decoded byte length.
 
 ```json
-{"type": "FILE_DATA", "request_id": 1, "filename": "notes.txt", "status": "ok", "size": 12, "data": "aGVsbG8gd29ybGQK"}
+{"type": "FILE_DATA", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "request_id": 1, "filename": "notes.txt", "status": "ok", "size": 12, "data": "aGVsbG8gd29ybGQK"}
 ```
 
 **`FILE_DATA`** (TCP), failure. No `size` or `data` field. `error` is a short reason.
 
 ```json
-{"type": "FILE_DATA", "request_id": 1, "filename": "notes.txt", "status": "error", "error": "file not found"}
+{"type": "FILE_DATA", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "request_id": 1, "filename": "notes.txt", "status": "error", "error": "file not found"}
 ```
