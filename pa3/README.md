@@ -2,11 +2,11 @@
 
 ### by Ethan Le, Brendan Ly, Vincent Schubert
 
-## Message format
+## Our Message format
 
 Every message is a JSON object with a `type` field and a `sender_id` field. `type` identifies the message kind; `sender_id` identifies the sending node. UDP messages are one datagram each, so the datagram boundary is the message boundary. TCP messages share one byte stream, so each one is framed with a length prefix.
 
-### Node identity (UUID)
+### Node identity (using UUID)
 
 Each running node generates one UUIDv4 at startup with `node_id = new_node_id()` from `protocol.py` (which uses `str(uuid.uuid4())`). Reuse this ID as `sender_id` in every message that node sends, including TCP messages. IDs use the canonical lowercase, hyphenated UUIDv4 string format, such as `8d972042-1f3b-4d75-a5b5-8f5e9a6c2d41`. Each process has its own ID, even when several nodes share an IP address; restarting a node generates a new ID.
 

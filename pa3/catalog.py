@@ -10,7 +10,6 @@ from state import State
 # Downloads write here until the transfer finishes, then rename to the final name.
 TEMP_SUFFIXES = (".part", ".tmp")
 
-
 class Catalog:
     """Announce shared/ filenames and apply remote FILE_LIST advertisements."""
 
