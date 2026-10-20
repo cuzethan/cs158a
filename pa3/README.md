@@ -85,6 +85,20 @@ All five types require `type` and `sender_id`. Additional fields are listed belo
 ```json
 {"type": "FILE_DATA", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "request_id": 1, "filename": "notes.txt", "status": "error", "error": "file not found"}
 ```
+## Division of work
+Brendan Ly: worked on protocol.py and network.py parts
+- protocol.py: Defines the node's format protocol and how they send + interpret messages
+- network.py: Manages the UDP + TCP connections and sockets
+
+Ethan Le: worked on state.py, logging_utils.py, and catalog.py files
+- state.py: stores peers and file tables
+- logging_utils.py: creates log files
+- catalog.py: handles file advertisements
+
+Vincent Schubert: worked on transfers.py and agent.py
+- transfers.py: handles downloading and serving files
+- agent.py: Program entry point that combines everything together, handles terminal commands that run the demo
+
 ## Execution Sample Screenshots
 
 
