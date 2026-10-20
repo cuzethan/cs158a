@@ -85,3 +85,28 @@ All five types require `type` and `sender_id`. Additional fields are listed belo
 ```json
 {"type": "FILE_DATA", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "request_id": 1, "filename": "notes.txt", "status": "error", "error": "file not found"}
 ```
+## Execution Sample Screenshots
+
+
+Run 5 nodes in 5 separate terminals
+<img width="2544" height="788" alt="Screenshot 2026-10-20 at 1 16 46 PM" src="https://github.com/user-attachments/assets/dab7d95e-6719-4be1-9cf4-bf8e773853ff" />
+
+In node2, demonstrate discovery and file lists by typing commands 'peers' and 'files'
+<img width="702" height="451" alt="Screenshot 2026-10-20 at 1 17 02 PM" src="https://github.com/user-attachments/assets/252538cd-69e5-4eba-b39f-06772be06cb3" />
+
+Transfer a file from node1 to node2 by calling node1's UUID prefix
+<img width="715" height="97" alt="Screenshot 2026-10-20 at 1 17 33 PM" src="https://github.com/user-attachments/assets/32db0fd8-f935-4b5a-8fda-0ee14c83032e" />
+
+After waiting 10 seconds, transfer a file from node2 to node3
+<img width="634" height="449" alt="Screenshot 2026-10-20 at 1 18 31 PM" src="https://github.com/user-attachments/assets/43a8d1fe-3469-42fe-81f3-0484b0019779" />
+
+Disconnect on node5, other nodes can see that node5 disconnected
+<img width="984" height="403" alt="Screenshot 2026-10-20 at 1 18 59 PM" src="https://github.com/user-attachments/assets/82fe9981-f406-42e7-a279-f56dddeb9e3d" />
+
+Node 5's file list is dropped
+
+<img width="717" height="455" alt="Screenshot 2026-10-20 at 1 19 48 PM" src="https://github.com/user-attachments/assets/c6ba6d8d-d930-47b3-b361-5a368f46c2a7" />
+
+
+
+
