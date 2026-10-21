@@ -87,6 +87,12 @@ All five types require `type` and `sender_id`. Additional fields are listed belo
 ```
 ## Run instructions
 
+- Prepare setup by creating the folders and sample files
+```
+cd /Users/your_user/cs158a
+mkdir -p pa3/shared/node{1,2,3,4,5}/shared
+```
+
 - Open five terminal tabs, and each one run:
 ```
   python3 pa3/agent.py --port 55001 --ip 127.0.0.1 --dir pa3/shared/{node_name}
