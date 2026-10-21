@@ -91,6 +91,8 @@ All five types require `type` and `sender_id`. Additional fields are listed belo
 ```
 cd /Users/your_user/cs158a
 mkdir -p pa3/shared/node{1,2,3,4,5}/shared
+echo "This is a file in Node1" > pa3/shared/node1/shared/hello.txt
+echo "This is a file in Node5" > pa3/shared/node5/shared/leaving.txt
 ```
 
 - Open five terminal tabs, and each one run:
