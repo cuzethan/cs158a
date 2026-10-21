@@ -85,6 +85,23 @@ All five types require `type` and `sender_id`. Additional fields are listed belo
 ```json
 {"type": "FILE_DATA", "sender_id": "cc357388-05c4-480d-b517-ae6a801f357e", "request_id": 1, "filename": "notes.txt", "status": "error", "error": "file not found"}
 ```
+## Run instructions
+
+- Open five terminal tabs, and each one run:
+```
+  python3 pa3/agent.py --port 55001 --ip 127.0.0.1 --dir pa3/shared/{node_name}
+```
+- To show peers or files, run the following commands:
+```
+peers
+files
+```
+- To download a file from a node (replace node-ID with the UUID prefix)
+```
+get <node-ID> your_node_name.txt
+```
+
+
 ## Division of work
 Brendan Ly: worked on protocol.py and network.py parts
 - protocol.py: Defines the node's format protocol and how they send + interpret messages
